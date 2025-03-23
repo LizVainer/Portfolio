@@ -1,21 +1,15 @@
-import Character from './Character';
-import Ground from './Ground';
-import cloudsBackground from '/src/assets/background/clouds_background.jpg';
+import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
+import GameScene from './GameScene';
+import NextScene from './NextScene';
+
 function App() {
   return (
-    <div
-      style={{
-        position: 'relative',
-        width: '100vw',
-        height: '100vh',
-        overflow: 'hidden',
-        backgroundImage: `url(${cloudsBackground})`,
-     
-      }}
-    >
-      <Ground />
-      <Character />
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<GameScene />} />
+        <Route path="/next" element={<NextScene />} />
+      </Routes>
+    </Router>
   );
 }
 

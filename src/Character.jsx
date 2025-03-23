@@ -14,14 +14,14 @@ import run5 from '/src/assets/character/run5.png';
 const idleFrames = [idle1, idle2, idle3, idle4];
 const runFrames = [run1, run2, run3, run4, run5];
 
-const TILE_HEIGHT = 128; // Your terrain height
+const TILE_HEIGHT = 128; 
 const CHARACTER_HEIGHT = 128;
 const GROUND_Y = window.innerHeight -120;
 
 const JUMP_FORCE = -35;
 const GRAVITY = 4;
 
-const Character = () => {
+const Character = ({ onMove }) => {
   const [position, setPosition] = useState({ x: 100, y: GROUND_Y-50 });
   const [frame, setFrame] = useState(0);
   const [direction, setDirection] = useState('right');
@@ -73,37 +73,41 @@ const Character = () => {
         let newY = pos.y;
         let velY = velocityY;
         let moved = false;
-
+  
+        // Handle horizontal movement
         if (keys.right) {
-          newX += 5;
+          newX += 10;
           moved = true;
         }
         if (keys.left) {
-          newX -= 5;
+          newX -= 10;
           moved = true;
         }
-
-        // gravity
+  
+        // Handle gravity and jumping
         if (isJumping) {
           velY += GRAVITY;
           newY += velY;
-
+  
           if (newY >= GROUND_Y) {
             newY = GROUND_Y-50;
             velY = 0;
             setIsJumping(false);
           }
+  
           setVelocityY(velY);
         }
-
-        setIsWalking(moved); // walking can still happen while jumping
+  
+        if (onMove) onMove(newX);
+  
+        setIsWalking(moved && !isJumping);
         return { x: newX, y: newY };
       });
     }, 20);
-
+  
     return () => clearInterval(moveInterval);
-  }, [keys, isJumping, velocityY]);
-
+  }, [keys, isJumping, velocityY, onMove]);
+  
   // Animation loop
   useEffect(() => {
     const interval = setInterval(() => {
