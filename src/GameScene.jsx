@@ -4,15 +4,32 @@ import Character from './Character';
 import Ground from './Ground';
 import Doors from './Doors';
 import cloudsBackground from '/src/assets/background/clouds_background.jpg';
+import useWindowSize from './useWindowSize';
 
 function GameScene() {
   const [playerX, setPlayerX] = useState(0);
   const [fadeOut, setFadeOut] = useState(false);
   const navigate = useNavigate();
+  const { width, height } = useWindowSize(); // 👈 dynamic screen size
 
-  const handleEnter = () => {
+  const handleEnter = (doorId) => {
     setFadeOut(true);
-    setTimeout(() => navigate('/next'), 1000); // 🔁 goes to /next route
+    setTimeout(() => {
+      if (doorId === 'Skills') {
+        navigate('/Skills');
+      } 
+      if(doorId === 'Projects'){
+        navigate('/projects');
+      }
+      if(doorId === 'About me'){
+        navigate('/about');
+      }
+      if(doorId === 'Achivments'){
+        navigate('/achivments');
+      }else{
+        navigate('/');
+      }
+    }, 1000);
   };
 
   return (
@@ -29,9 +46,11 @@ function GameScene() {
         position: 'relative',
       }}
     >
-      <Doors playerX={playerX} onEnter={handleEnter} />
-      <Ground />
-      <Character onMove={(x) => setPlayerX(x)} />
+      <Doors playerX={playerX} onEnter={handleEnter} width={width} height={height} />
+      <Ground height={64} />
+
+      <Character onMove={(x) => setPlayerX(x)} windowHeight={height} />
+
     </div>
   );
 }

@@ -33,11 +33,11 @@ const Character = ({ onMove }) => {
   // Handle key press
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.key === 'ArrowRight' || e.key === 'd') {
+      if (e.key === 'ArrowRight' || e.key === 'd' || e.key==='D') {
         setKeys((k) => ({ ...k, right: true }));
         setDirection('right');
       }
-      if (e.key === 'ArrowLeft' || e.key === 'a') {
+      if (e.key === 'ArrowLeft' || e.key === 'a' || e.key==='A') {
         setKeys((k) => ({ ...k, left: true }));
         setDirection('left');
       }
@@ -48,10 +48,10 @@ const Character = ({ onMove }) => {
     };
 
     const handleKeyUp = (e) => {
-      if (e.key === 'ArrowRight' || e.key === 'd') {
+      if (e.key === 'ArrowRight' || e.key === 'd' || e.key==='D') {
         setKeys((k) => ({ ...k, right: false }));
       }
-      if (e.key === 'ArrowLeft' || e.key === 'a') {
+      if (e.key === 'ArrowLeft' || e.key === 'a' || e.key==='A') {
         setKeys((k) => ({ ...k, left: false }));
       }
     };
@@ -84,7 +84,6 @@ const Character = ({ onMove }) => {
           moved = true;
         }
   
-        // Handle gravity and jumping
         if (isJumping) {
           velY += GRAVITY;
           newY += velY;
@@ -108,7 +107,6 @@ const Character = ({ onMove }) => {
     return () => clearInterval(moveInterval);
   }, [keys, isJumping, velocityY, onMove]);
   
-  // Animation loop
   useEffect(() => {
     const interval = setInterval(() => {
       setFrame((prev) => {
@@ -120,7 +118,6 @@ const Character = ({ onMove }) => {
     return () => clearInterval(interval);
   }, [isWalking]);
 
-  // Select frame, but freeze on current frame if jumping
   const currentFrame =
     isJumping || !isWalking
       ? (isWalking ? runFrames : idleFrames)[frame]

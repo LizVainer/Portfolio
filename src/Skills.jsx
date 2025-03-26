@@ -1,4 +1,5 @@
-function NextScene() {
+
+function Skills() {
     return (
       <div
         style={{
@@ -16,5 +17,5 @@ function NextScene() {
     );
   }
   
-  export default NextScene;
+  export default Skills;
   
