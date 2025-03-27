@@ -14,10 +14,12 @@ import run5 from '/src/assets/character/run5.png';
 const idleFrames = [idle1, idle2, idle3, idle4];
 const runFrames = [run1, run2, run3, run4, run5];
 
-const JUMP_FORCE = -35;
+const JUMP_FORCE = -45;
 const GRAVITY = 4;
+const CHARACTER_WIDTH = 128;
+const CHARACTER_HEIGHT = 128;
 
-const Character = ({ onMove, windowHeight }) => {
+const Character = ({ onMove, windowHeight, platforms }) => {
   const GROUND_Y = windowHeight - 120;
 
   const [position, setPosition] = useState({ x: 100, y: GROUND_Y - 50 });
@@ -63,7 +65,7 @@ const Character = ({ onMove, windowHeight }) => {
     };
   }, [isJumping]);
 
-  // Movement & gravity
+  // Movement & gravity + platform collision
   useEffect(() => {
     const moveInterval = setInterval(() => {
       setPosition((pos) => {
@@ -72,7 +74,7 @@ const Character = ({ onMove, windowHeight }) => {
         let velY = velocityY;
         let moved = false;
 
-        // Movement
+        // Horizontal movement
         if (keys.right) {
           newX += 10;
           moved = true;
@@ -82,11 +84,28 @@ const Character = ({ onMove, windowHeight }) => {
           moved = true;
         }
 
-        // Jump physics
+        // Gravity & jump
         if (isJumping) {
           velY += GRAVITY;
           newY += velY;
 
+          // Check for platform collision
+          for (const plat of platforms) {
+            const isAbove = pos.y + CHARACTER_HEIGHT <= plat.y;
+            const willFallThrough = newY + CHARACTER_HEIGHT >= plat.y;
+            const horizontallyAligned =
+            newX + CHARACTER_WIDTH > plat.x &&
+            newX < plat.x + plat.width;
+
+            if (isAbove && willFallThrough && horizontallyAligned) {
+              newY = plat.y - CHARACTER_HEIGHT;
+              velY = 0;
+              setIsJumping(false);
+              break;
+            }
+          }
+
+          // Ground collision
           if (newY >= GROUND_Y - 50) {
             newY = GROUND_Y - 50;
             velY = 0;
@@ -102,9 +121,9 @@ const Character = ({ onMove, windowHeight }) => {
     }, 20);
 
     return () => clearInterval(moveInterval);
-  }, [keys, isJumping, velocityY, GROUND_Y]);
+  }, [keys, isJumping, velocityY, GROUND_Y, platforms]);
 
-  // Update parent on x position change
+  // Notify parent of x movement
   useEffect(() => {
     if (onMove) onMove(position.x);
   }, [position.x]);
@@ -134,8 +153,8 @@ const Character = ({ onMove, windowHeight }) => {
         position: 'absolute',
         left: `${position.x}px`,
         top: `${position.y}px`,
-        width: '128px',
-        height: '128px',
+        width: `${CHARACTER_WIDTH}px`,
+        height: `${CHARACTER_HEIGHT}px`,
         transform: direction === 'left' ? 'scaleX(-1)' : 'scaleX(1)',
         transformOrigin: 'bottom center',
         imageRendering: 'pixelated',

@@ -5,12 +5,14 @@ import Ground from './Ground';
 import Doors from './Doors';
 import cloudsBackground from '/src/assets/background/clouds_background.jpg';
 import useWindowSize from './useWindowSize';
+import { getPlatforms } from './utils/platforms';
 
 function GameScene() {
   const [playerX, setPlayerX] = useState(0);
   const [fadeOut, setFadeOut] = useState(false);
   const navigate = useNavigate();
   const { width, height } = useWindowSize(); 
+  const platforms = getPlatforms(height, width);
 
   const handleEnter = (doorId) => {
     setFadeOut(true);
@@ -46,7 +48,12 @@ function GameScene() {
       <Doors playerX={playerX} onEnter={handleEnter} width={width} height={height} />
       <Ground height={64} />
 
-      <Character onMove={(x) => setPlayerX(x)} windowHeight={height} />
+      <Character
+  onMove={(x) => setPlayerX(x)}
+  windowHeight={height}
+  platforms={platforms}
+/>
+
 
     </div>
   );
