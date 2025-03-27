@@ -14,15 +14,13 @@ import run5 from '/src/assets/character/run5.png';
 const idleFrames = [idle1, idle2, idle3, idle4];
 const runFrames = [run1, run2, run3, run4, run5];
 
-const TILE_HEIGHT = 128; 
-const CHARACTER_HEIGHT = 128;
-const GROUND_Y = window.innerHeight -120;
-
 const JUMP_FORCE = -35;
 const GRAVITY = 4;
 
-const Character = ({ onMove }) => {
-  const [position, setPosition] = useState({ x: 100, y: GROUND_Y-50 });
+const Character = ({ onMove, windowHeight }) => {
+  const GROUND_Y = windowHeight - 120;
+
+  const [position, setPosition] = useState({ x: 100, y: GROUND_Y - 50 });
   const [frame, setFrame] = useState(0);
   const [direction, setDirection] = useState('right');
   const [isWalking, setIsWalking] = useState(false);
@@ -33,11 +31,11 @@ const Character = ({ onMove }) => {
   // Handle key press
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.key === 'ArrowRight' || e.key === 'd' || e.key==='D') {
+      if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
         setKeys((k) => ({ ...k, right: true }));
         setDirection('right');
       }
-      if (e.key === 'ArrowLeft' || e.key === 'a' || e.key==='A') {
+      if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
         setKeys((k) => ({ ...k, left: true }));
         setDirection('left');
       }
@@ -48,10 +46,10 @@ const Character = ({ onMove }) => {
     };
 
     const handleKeyUp = (e) => {
-      if (e.key === 'ArrowRight' || e.key === 'd' || e.key==='D') {
+      if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
         setKeys((k) => ({ ...k, right: false }));
       }
-      if (e.key === 'ArrowLeft' || e.key === 'a' || e.key==='A') {
+      if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
         setKeys((k) => ({ ...k, left: false }));
       }
     };
@@ -65,7 +63,7 @@ const Character = ({ onMove }) => {
     };
   }, [isJumping]);
 
-  // Movement & gravity loop
+  // Movement & gravity
   useEffect(() => {
     const moveInterval = setInterval(() => {
       setPosition((pos) => {
@@ -73,8 +71,8 @@ const Character = ({ onMove }) => {
         let newY = pos.y;
         let velY = velocityY;
         let moved = false;
-  
-        // Handle horizontal movement
+
+        // Movement
         if (keys.right) {
           newX += 10;
           moved = true;
@@ -83,30 +81,35 @@ const Character = ({ onMove }) => {
           newX -= 10;
           moved = true;
         }
-  
+
+        // Jump physics
         if (isJumping) {
           velY += GRAVITY;
           newY += velY;
-  
-          if (newY >= GROUND_Y) {
-            newY = GROUND_Y-50;
+
+          if (newY >= GROUND_Y - 50) {
+            newY = GROUND_Y - 50;
             velY = 0;
             setIsJumping(false);
           }
-  
+
           setVelocityY(velY);
         }
-  
-        if (onMove) onMove(newX);
-  
+
         setIsWalking(moved && !isJumping);
         return { x: newX, y: newY };
       });
     }, 20);
-  
+
     return () => clearInterval(moveInterval);
-  }, [keys, isJumping, velocityY, onMove]);
-  
+  }, [keys, isJumping, velocityY, GROUND_Y]);
+
+  // Update parent on x position change
+  useEffect(() => {
+    if (onMove) onMove(position.x);
+  }, [position.x]);
+
+  // Frame animation
   useEffect(() => {
     const interval = setInterval(() => {
       setFrame((prev) => {

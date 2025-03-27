@@ -10,23 +10,20 @@ function GameScene() {
   const [playerX, setPlayerX] = useState(0);
   const [fadeOut, setFadeOut] = useState(false);
   const navigate = useNavigate();
-  const { width, height } = useWindowSize(); // 👈 dynamic screen size
+  const { width, height } = useWindowSize(); 
 
   const handleEnter = (doorId) => {
     setFadeOut(true);
     setTimeout(() => {
       if (doorId === 'Skills') {
         navigate('/Skills');
-      } 
-      if(doorId === 'Projects'){
-        navigate('/projects');
-      }
-      if(doorId === 'About me'){
-        navigate('/about');
-      }
-      if(doorId === 'Achivments'){
-        navigate('/achivments');
-      }else{
+      } else if (doorId === 'Projects') {
+        navigate('/Projects');
+      } else if (doorId === 'About me') {
+        navigate('/Aboutme');
+      } else if (doorId === 'Achivments') {
+        navigate('/Achivments');
+      } else {
         navigate('/');
       }
     }, 1000);
